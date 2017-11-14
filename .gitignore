@@ -1,0 +1,32 @@
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+/.idea/
+
+# office temp file
+.~*
+~$*
+
+# test folder
+/00. Test/
+/src/L02_DefiningClasses_Exercises/P10_FamilyTree_lastGoodversion/
+/src/L00_Test/
