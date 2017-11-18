@@ -14,4 +14,16 @@ public class SpyImpl extends SoldierImpl implements Spy {
     public String getCodeNumber() {
         return this.codeNumber;
     }
+    
+    @Override
+    public String toString() {
+        final StringBuilder output = new StringBuilder();
+        output.append(super.toString()).append(System.lineSeparator());
+        output.append(String.format(
+                "Code Number: %s",
+                this.codeNumber
+        ));
+        
+        return output.toString();
+    }
 }

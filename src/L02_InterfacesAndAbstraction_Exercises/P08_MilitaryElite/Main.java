@@ -14,92 +14,95 @@ import java.util.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
+        
+        Map<String, Soldier> soldiers = getSolders();
+        
+        soldiers.values().forEach(s -> System.out.println(s.toString().trim()));
+    }
+    
+    private static Map<String, Soldier> getSolders() throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        Map<String, Soldier> soldiers = new LinkedHashMap<>();
+        String command = br.readLine();
         
-        List<Soldier> soldiers = new LinkedList<>();
-        String inputLine = br.readLine();
-        
-        while (!inputLine.equals("End")) {
-            String[] tokens = inputLine.split("\\s+");
-            Soldier aPrivate = null;
-            switch (tokens[0]) {
-                case "Private":
-                    // 0:Private 1:<id> 2:<firstName> 3:<lastName> 4:<salary>
-                    aPrivate = new PrivateImpl(tokens[1], tokens[2], tokens[3], Double.parseDouble(tokens[4]));
-                    break;
-                case "LeutenantGeneral":
-                    // 0:LeutenantGeneral 1:<id> 2:<firstName> 3:<lastName> 4:<salary>
-                    // 5:<private1Id> 6:<private2Id> … n:<privateNId>
-                    List<Private> privateList = getPrivateList(soldiers, tokens);
-                    aPrivate = new LeutenantGeneralImpl(tokens[1], tokens[2], tokens[3],
-                            Double.parseDouble(tokens[4]), privateList);
-                    break;
-                case "Engineer":
-                    // 0:Engineer 1:<id> 2:<firstName> 3:<lastName> 4:<salary> 5:<corps> :6<repair1Part> :7<repair1Hours>
-                    // … n:<repairNPart> n+1:<repairNHours>
-                    List<Repair> repairs = getRepairsList(tokens);
-                    aPrivate = new EngineerImpl(tokens[1], tokens[2], tokens[3], Double.parseDouble(tokens[4]),
-                            tokens[5], repairs);
-                    break;
-                case "Commando":
-                    // 0:Commando 1:<id> 2:<firstName> 3:<lastName> 4:<salary> 5:<corps> 6:<mission1CodeName> 7:<mission1state>
-                    // … n:<missionNCodeName> n+1:<missionNstate>
-                    List<Missions> missions = getMissions(tokens);
-                    aPrivate = new CommandoImpl(tokens[1], tokens[2], tokens[3], Double.parseDouble(tokens[4]),
-                            tokens[5], missions);
-                    break;
-                case "Spy":
-                    aPrivate = new SpyImpl(tokens[1], tokens[2], tokens[3], tokens[4]);
+        while (!command.equals("End")) {
+            String[] tokens = command.split("\\s+");
+            Soldier soldier = null;
+            try {
+                switch (tokens[0]) {
+                    case "Private":
+                        soldier = new PrivateImpl(tokens[1], tokens[2], tokens[3], Double.parseDouble(tokens[4]));
+                        break;
+                    case "LeutenantGeneral":
+                        List<Private> privates = getPrivates(tokens, soldiers);
+                        soldier = new LeutenantGeneralImpl(tokens[1], tokens[2], tokens[3],
+                                Double.parseDouble(tokens[4]), privates);
+                        break;
+                    case "Engineer":
+                        List<Repair> repairs = getRepairsList(tokens);
+                        soldier = new EngineerImpl(tokens[1], tokens[2], tokens[3], Double.parseDouble(tokens[4]),
+                                tokens[5], repairs);
+                        break;
+                    case "Commando":
+                        List<Mission> missions = getMissions(tokens);
+                        soldier = new CommandoImpl(tokens[1], tokens[2], tokens[3], Double.parseDouble(tokens[4]),
+                                tokens[5], missions);
+                        break;
+                    case "Spy":
+                        soldier = new SpyImpl(tokens[1], tokens[2], tokens[3], tokens[4]);
+                        break;
+                    
+                }
+            }
+            catch (IllegalArgumentException iae) {
             }
             
-            if (aPrivate != null){
-                soldiers.add(aPrivate);
+            if (soldier != null) {
+                soldiers.putIfAbsent(soldier.getId(), soldier);
             }
             
-            inputLine = br.readLine();
+            command = br.readLine();
         }
+        
+        return soldiers;
     }
     
-    private static List<Repair> getRepairsList(String[] tokens) {
-        return null;// todo
-    }
-    
-    private static List<Missions> getMissions(String[] tokens) {
-        List<Missions> missions = new ArrayList<>(tokens.length - 6);
-        for (int i = 6; i < tokens.length - 1; i += 2) {
-            missions.add(new MissionsImpl(tokens[i], tokens[i + 1]));
+    private static List<Mission> getMissions(String[] tokens) {
+        List<Mission> missions = new LinkedList<>();
+        for (int i = 6; i < tokens.length; i += 2) {
+            try {
+                missions.add(new MissionImpl(tokens[i], tokens[i + 1]));
+            }
+            catch (IllegalArgumentException iae) {
+            }
+            catch (IndexOutOfBoundsException iobe) {
+            }
         }
-    
+        
         return missions;
     }
     
-    private static List<Repair> getPrivateList(String[] tokens) {
-        List<Repair> repairs = new ArrayList<>(tokens.length - 6);
-        for (int i = 6; i < tokens.length - 1; i += 2) {
-            repairs.add(
-                    new RepairImpl(tokens[i], Integer.parseInt(tokens[i + 1]))
-            );
+    private static List<Repair> getRepairsList(String[] tokens) {
+        List<Repair> repairs = new LinkedList<>();
+        for (int i = 6; i < tokens.length; i += 2) {
+            try {
+                repairs.add(new RepairImpl(tokens[i], Integer.parseInt(tokens[i + 1])));
+            }
+            catch (IllegalArgumentException iae) {
+            }
+            catch (IndexOutOfBoundsException iobe) {
+            }
         }
         
         return repairs;
     }
     
-    private static List<Private> getPrivateList(List<Soldier> soldiers, String[] tokens) {
-        List<Private> privateList = new ArrayList<>(tokens.length - 5);
-        // 0:LeutenantGeneral 1:<id> 2:<firstName> 3:<lastName> 4:<salary>
-        // 5:<private1Id> 6:<private2Id> … n:<privateNId>
+    private static List<Private> getPrivates(String[] tokens, Map<String, Soldier> soldiers) {
+        List<Private> privates = new ArrayList<>();
         for (int i = 5; i < tokens.length; i++) {
-            int index = i;
-            // todo
-            Private selectedPrivate = soldiers.stream()
-                    .filter(pr -> pr.getId().equals(tokens[index]))
-                    .findFirst()
-                    .get();
-            if (selectedPrivate != null && !privateList.contains(selectedPrivate)) {
-                privateList.add(selectedPrivate);
-            }
+            privates.add((Private) soldiers.get(tokens[i]));
         }
         
-        return privateList;
+        return privates;
     }
 }

@@ -6,11 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class SpecialisedSoldierImpl extends PrivateImpl implements SpecialisedSoldier {
-    private static List<String> corpsList = new ArrayList<String>(2){{
+    private static final List<String> corpsList = new ArrayList<String>(){{
         add("Airforces");
         add("Marines");
     }};
-    private String corps;
+    
+    private String corps = null;
     
     public SpecialisedSoldierImpl(String id, String firstName, String lastName, double salary, String corps) {
         super(id, firstName, lastName, salary);
@@ -19,7 +20,7 @@ public abstract class SpecialisedSoldierImpl extends PrivateImpl implements Spec
     
     private void setCorps(String corps) {
         if (!corpsList.contains(corps)){
-            return; // error?
+            throw new IllegalArgumentException();
         }
         this.corps = corps;
     }
@@ -27,5 +28,14 @@ public abstract class SpecialisedSoldierImpl extends PrivateImpl implements Spec
     @Override
     public String getCorps() {
         return this.corps;
+    }
+    
+    @Override
+    public String toString() {
+        final StringBuilder output = new StringBuilder();
+        output.append(super.toString()).append(System.lineSeparator());
+        output.append("Corps: ").append(this.corps);
+        
+        return output.toString();
     }
 }
