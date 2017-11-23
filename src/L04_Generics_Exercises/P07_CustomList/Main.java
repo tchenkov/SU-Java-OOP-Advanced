@@ -13,26 +13,26 @@ public class Main {
         String command = br.readLine();
         
         while (!command.equals("END")){
-            String[] instuction = command.split(" ");
+            String[] instruction = command.split(" ");
             
-            switch (instuction[0]){
+            switch (instruction[0]){
                 case "Add":
-                    customList.add(instuction[1]);
+                    customList.add(instruction[1]);
                     break;
                 case "Remove":
-                    customList.remove(Integer.parseInt(instuction[1]));
+                    customList.remove(Integer.parseInt(instruction[1]));
                     break;
                 case "Contains":
                     System.out.println(
-                            customList.contains(instuction[1])
+                            customList.contains(instruction[1])
                     );
                     break;
                 case "Swap":
-                    customList.swap(Integer.parseInt(instuction[1]), Integer.parseInt(instuction[2]));
+                    customList.swap(Integer.parseInt(instruction[1]), Integer.parseInt(instruction[2]));
                     break;
                 case "Greater":
                     System.out.println(
-                            customList.countGreaterThan(instuction[1])
+                            customList.countGreaterThan(instruction[1])
                     );
                     break;
                 case "Max":
