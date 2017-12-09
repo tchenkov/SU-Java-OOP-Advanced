@@ -15,7 +15,6 @@ public class CreateCommand extends BaseCommand {
                 weapon = WeaponFactory.createKnife(super.getParams()[1]); break;
             case "SWORD":
                 weapon = WeaponFactory.createSword(super.getParams()[1]); break;
-//                weapon = WeaponFactory.create(super.getParams()[0], super.getParams()[1]); break;
             default:
                 return null;
         }
